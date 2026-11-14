@@ -1,0 +1,23 @@
+# pbsbc01h3 ramlog service
+# Stores logs in (compressed) memory
+# This service may block the boot process for up to 30 sec
+
+[Unit]
+Description=pbsbc01h3 memory supported logging
+DefaultDependencies=no
+Before=rsyslog.service sysinit.target syslog.target
+After=pbsbc01h3-zram-config.service
+Conflicts=shutdown.target
+RequiresMountsFor=/var/log /var/log.hdd
+IgnoreOnIsolate=yes
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog start
+ExecStop=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog stop
+ExecReload=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog write
+RemainAfterExit=yes
+TimeoutStartSec=30sec
+
+[Install]
+WantedBy=sysinit.target
