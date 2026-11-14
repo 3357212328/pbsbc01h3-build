@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+/*
+ * Copyright (C) 2018 Amarula Solutions
+ * Author: Jagan Teki <jagan@amarulasolutions.com>
+ */
+
+#include "sun50i-h6-pbsbc01h3.dtsi"
+
+/ {
+	model = "pbsbc01h3 One Plus";
+	compatible = "xunlong,pbsbc01h3-one-plus", "allwinner,sun50i-h6";
+};

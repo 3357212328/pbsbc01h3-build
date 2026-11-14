@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: (GPL-2.0+ or MIT)
+/*
+ * Copyright (C) 2018 Jagan Teki <jagan@openedev.com>
+ */
+
+#include "sun50i-h6-pbsbc01h3.dtsi"
+
+/ {
+	model = "pbsbc01h3 Lite2";
+	compatible = "xunlong,pbsbc01h3-lite2", "allwinner,sun50i-h6";
+};
