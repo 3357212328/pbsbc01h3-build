@@ -270,7 +270,7 @@ case $RELEASE in
 		[[ -z $BUILD_MINIMAL || $BUILD_MINIMAL == no ]] && PACKAGE_LIST_RELEASE="man-db kbd net-tools gnupg2 dirmngr networkd-dispatcher"
 		PACKAGE_LIST_DESKTOP=$(sed -E 's/(^|[[:space:]])pavumeter([[:space:]]|$)/ /g; s/(^|[[:space:]])policykit-1([[:space:]]|$)/\1polkitd pkexec\2/g; s/(^|[[:space:]])gnome-orca([[:space:]]|$)/\1orca\2/g' <<< "${PACKAGE_LIST_DESKTOP}")
 		PACKAGE_LIST_DESKTOP+=" xserver-xorg-input-all paprefs dbus-x11 pulseaudio-module-gsettings onboard"
-		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" falkon system-config-printer-common system-config-printer \
+		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" epiphany-browser system-config-printer-common system-config-printer \
 								language-selector-gnome viewnior"
 		PACKAGE_LIST_PREDEPENDS="policykit-1-gnome notification-daemon"
 	;;
