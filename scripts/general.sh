@@ -661,7 +661,11 @@ prepare_host()
 	wait_for_package_manager
 
 	# temporally fix for Locales settings
-	export LC_ALL="en_US.UTF-8"
+	if locale -a 2>/dev/null | grep -qiE '^en_US\.(utf8|UTF-8)$'; then
+		export LC_ALL="en_US.UTF-8"
+	else
+		export LC_ALL="C.UTF-8"
+	fi
 
 	# packages list for host
 	# NOTE: please sync any changes here with the Dockerfile and Vagrantfile
@@ -671,21 +675,23 @@ prepare_host()
 	nfs-kernel-server btrfs-progs ncurses-term p7zip-full kmod dosfstools libc6-dev-armhf-cross imagemagick \
 	curl patchutils liblz4-tool libpython2.7-dev linux-base swig acl python3-dev python3-distutils libfdt-dev \
 	locales ncurses-base pixz dialog systemd-container udev lib32stdc++6 libc6-i386 lib32ncurses5 lib32tinfo5 \
-	bison libbison-dev flex libfl-dev cryptsetup gpg gnupg1 gpgv1 gpgv2 cpio aria2 pigz dirmngr python3-distutils distcc git dos2unix"
+	bison libbison-dev flex libfl-dev cryptsetup gpg gnupg1 gpgv1 gpgv2 cpio aria2 pigz dirmngr distcc git dos2unix"
 
 	local codename=$(lsb_release -sc)
 
 	# Getting ready for Ubuntu 20.04 / Ubuntu 26.04
 	if [[ $codename == resolute ]]; then
-		hostdeps="${hostdeps/ntpdate/ntpsec-ntpdate}"
-		hostdeps="${hostdeps/qemu-user-static/qemu-user qemu-user-binfmt}"
-		hostdeps="${hostdeps/libncurses5-dev/libncurses-dev}"
-		hostdeps="${hostdeps/p7zip-full/7zip}"
-		hostdeps="${hostdeps/liblz4-tool/lz4}"
-		hostdeps="${hostdeps/libpython2.7-dev/}"
-		hostdeps="${hostdeps/python3-distutils/python3-setuptools}"
-		hostdeps="${hostdeps/gpgv2/}"
-		hostdeps="${hostdeps/lib32ncurses5 lib32tinfo5/lib32ncurses6 lib32tinfo6}"
+		hostdeps="${hostdeps//ntpdate/ntpsec-ntpdate}"
+		hostdeps="${hostdeps//qemu-user-static/qemu-user qemu-user-binfmt}"
+		hostdeps="${hostdeps//libncurses5-dev/libncurses-dev}"
+		hostdeps="${hostdeps//p7zip-full/7zip}"
+		hostdeps="${hostdeps//liblz4-tool/lz4}"
+		hostdeps="${hostdeps//libpython2.7-dev/}"
+		hostdeps="${hostdeps//python3-distutils/python3-setuptools}"
+		hostdeps="${hostdeps//gnupg1/}"
+		hostdeps="${hostdeps//gpgv1/}"
+		hostdeps="${hostdeps//gpgv2/}"
+		hostdeps="${hostdeps//lib32ncurses5 lib32tinfo5/lib32ncurses6 lib32tinfo6}"
 		hostdeps+=" aptly python-is-python3"
 	elif [[ $codename == focal || $codename == ulyana ]]; then
 		hostdeps+=" python2 python3"
@@ -787,7 +793,8 @@ prepare_host()
 		apt-get -q update
 		apt-get -y upgrade
 		apt-get -q -y --no-install-recommends install -o Dpkg::Options::='--force-confold' "${deps[@]}" | tee -a "${DEST}"/debug/hostdeps.log
-		update-ccache-symlinks
+		[[ ${PIPESTATUS[0]} -ne 0 ]] && exit_with_error "Failed to install host build dependencies"
+		command -v update-ccache-symlinks >/dev/null 2>&1 && update-ccache-symlinks
 	fi
 
 	# sync clock
