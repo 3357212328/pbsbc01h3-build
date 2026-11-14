@@ -1,0 +1,9 @@
+Package: pbsbc01h3-firmware
+Version: 2.2.2
+Architecture: all
+Maintainer: pbsbc01h3 <leeboby@aliyun.com>
+Installed-Size: 1
+Replaces: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, pbsbc01h3-firmware
+Section: kernel
+Priority: optional
+Description: Linux firmware
