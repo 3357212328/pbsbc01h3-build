@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+srctree ?= .
+
+build:
+	$(MAKE) KERNELRELEASE=5.4.65-sunxi ARCH=arm 	KBUILD_BUILD_VERSION=2.2.2 -f $(srctree)/Makefile
+
+binary-arch:
+	$(MAKE) KERNELRELEASE=5.4.65-sunxi ARCH=arm 	KBUILD_BUILD_VERSION=2.2.2 -f $(srctree)/Makefile intdeb-pkg
+
+clean:
+	rm -rf debian/*tmp debian/files
+	$(MAKE) clean
+
+binary: binary-arch
