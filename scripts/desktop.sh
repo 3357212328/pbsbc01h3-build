@@ -116,7 +116,9 @@ create_desktop_package ()
 
 	# create board DEB file
 	display_alert "Building desktop package" "${CHOSEN_DESKTOP}_${REVISION}_all" "info"
-	fakeroot dpkg-deb -b "${destination}" "${destination}.deb" >/dev/null
+	chmod 755 "${destination}" "${destination}/DEBIAN"
+	chmod 644 "${destination}/DEBIAN/control"
+	fakeroot dpkg-deb -b "${destination}" "${destination}.deb" >/dev/null || exit_with_error "Failed to build desktop package" "${CHOSEN_DESKTOP}_${REVISION}_all"
 	mkdir -p "${DEB_STORAGE}/${RELEASE}"
 	mv "${destination}.deb" "${DEB_STORAGE}/${RELEASE}"
 	# cleanup

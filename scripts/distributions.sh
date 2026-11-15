@@ -300,6 +300,8 @@ install_common()
 	if [[ "${REPOSITORY_INSTALL}" != *pbsbc01h3-firmware* ]]; then
 		if [[ -f ${DEB_STORAGE}/pbsbc01h3-firmware_${REVISION}_all.deb ]]; then
 			install_deb_chroot "${DEB_STORAGE}/pbsbc01h3-firmware_${REVISION}_all.deb"
+		else
+			exit_with_error "Missing required firmware package" "${DEB_STORAGE}/pbsbc01h3-firmware_${REVISION}_all.deb"
 		fi
 	else
 		if [[ -f ${DEB_STORAGE}/pbsbc01h3-firmware_${REVISION}_all.deb ]]; then
@@ -396,6 +398,7 @@ install_common()
 	chroot "${SDCARD}" /bin/bash -c "chown root:messagebus /usr/lib/dbus-1.0/dbus-daemon-launch-helper"
 	chroot "${SDCARD}" /bin/bash -c "chmod u+s /usr/lib/dbus-1.0/dbus-daemon-launch-helper"
 
+	[[ -f "${SDCARD}"/etc/sysctl.conf ]] && \
 	sed -i "s/^#kernel.printk*/kernel.printk/" "${SDCARD}"/etc/sysctl.conf
 
 	# disable repeated messages due to xconsole not being installed.
@@ -403,6 +406,7 @@ install_common()
 	sed '/daemon\.\*\;mail.*/,/xconsole/ s/.*/#&/' -i "${SDCARD}"/etc/rsyslog.d/50-default.conf
 
 	# disable deprecated parameter
+	[[ -f "${SDCARD}"/etc/rsyslog.conf ]] && \
 	sed '/.*$KLogPermitNonKernelFacility.*/,// s/.*/#&/' -i "${SDCARD}"/etc/rsyslog.conf
 
 	# enable getty on multiple serial consoles

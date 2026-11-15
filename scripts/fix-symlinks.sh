@@ -42,7 +42,8 @@ for sub in subdirs:
             resolved = os.path.normpath(os.path.join(dirpath, target))
             if resolved == os.path.normpath(fpath):
                 continue
-            if os.path.lexists(resolved):
+            dangling_known = target.startswith(("../", "./")) or (name == "softy" and target == "debian-software")
+            if os.path.lexists(resolved) or dangling_known:
                 os.unlink(fpath)
                 os.symlink(target, fpath)
                 fixed += 1

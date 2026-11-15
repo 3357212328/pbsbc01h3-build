@@ -78,16 +78,17 @@ create_board_package()
 	sed -i "s/^COMPRESS=.*/COMPRESS=gzip/" /etc/initramfs-tools/initramfs.conf
 
 	# swap
-	grep -q vm.swappiness /etc/sysctl.conf
-	case \$? in
-	0)
-	    sed -i 's/vm\.swappiness.*/vm.swappiness=100/' /etc/sysctl.conf
-	    ;;
-	*)
-	    echo vm.swappiness=100 >>/etc/sysctl.conf
-	    ;;
-	esac
-	sysctl -p >/dev/null 2>&1
+	if [ -f /etc/sysctl.conf ]; then
+	    if grep -q vm.swappiness /etc/sysctl.conf; then
+	        sed -i 's/vm\.swappiness.*/vm.swappiness=100/' /etc/sysctl.conf
+	    else
+	        echo vm.swappiness=100 >>/etc/sysctl.conf
+	    fi
+	    sysctl -p >/dev/null 2>&1 || true
+	elif [ -d /etc/sysctl.d ]; then
+	    echo vm.swappiness=100 >/etc/sysctl.d/99-pbsbc01h3-swappiness.conf
+	    sysctl --system >/dev/null 2>&1 || true
+	fi
 
 	# disable deprecated services
 	[ -f "/etc/profile.d/activate_psd_user.sh" ] && rm /etc/profile.d/activate_psd_user.sh

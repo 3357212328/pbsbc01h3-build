@@ -30,7 +30,9 @@ fi
 echo "Restoring POSIX symlinks ..."
 bash "$DEST_DIR/scripts/fix-symlinks.sh" "$DEST_DIR"
 
-echo "Ensuring executable permissions and LF line endings on scripts ..."
+echo "Normalizing DEBIAN control dirs, systemd units, and script permissions ..."
+find "$DEST_DIR/external" -type d -name DEBIAN -exec chmod 755 {} +
+find "$DEST_DIR/external/packages/bsp" -path '*/systemd/*' -type f -exec chmod 644 {} +
 find "$DEST_DIR/scripts" -maxdepth 1 -type f -name '*.sh' -exec sed -i 's/\r$//' {} + -exec chmod +x {} +
 sed -i 's/\r$//' "$DEST_DIR/build.sh"
 chmod +x "$DEST_DIR/build.sh"

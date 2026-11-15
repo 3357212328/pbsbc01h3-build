@@ -521,6 +521,7 @@ compile_firmware()
 
         # set up control file
         mkdir -p DEBIAN
+        chmod 755 "${EXTER}/cache/sources/${plugin_dir}" "${EXTER}/cache/sources/${plugin_dir}/DEBIAN"
 	cat <<-END > DEBIAN/control
 	Package: pbsbc01h3-firmware${FULL}
 	Version: $REVISION
@@ -532,11 +533,15 @@ compile_firmware()
 	Priority: optional
 	Description: Linux firmware${FULL}
 	END
+        chmod 644 DEBIAN/control
 
         cd "${EXTER}"/cache/sources || exit
         # pack
         mv "pbsbc01h3-firmware${FULL}" "pbsbc01h3-firmware${FULL}_${REVISION}_all"
-        fakeroot dpkg -b "pbsbc01h3-firmware${FULL}_${REVISION}_all" >> "${DEST}"/debug/install.log 2>&1
+        if ! fakeroot dpkg -b "pbsbc01h3-firmware${FULL}_${REVISION}_all" >> "${DEST}"/debug/install.log 2>&1; then
+                mv "pbsbc01h3-firmware${FULL}_${REVISION}_all" "pbsbc01h3-firmware${FULL}"
+                exit_with_error "Failed to build firmware package" "pbsbc01h3-firmware${FULL}_${REVISION}_all"
+        fi
         mv "pbsbc01h3-firmware${FULL}_${REVISION}_all" "pbsbc01h3-firmware${FULL}"
         mv "pbsbc01h3-firmware${FULL}_${REVISION}_all.deb" "${DEB_STORAGE}/"
 }
