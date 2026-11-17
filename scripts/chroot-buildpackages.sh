@@ -318,8 +318,16 @@ chroot_installpackages_local()
 	compgen -G "${extra_base}/extra/${RELEASE}-utils/*.deb" > /dev/null && \
 		aptly -config=$conf repo add temp "${extra_base}/extra/${RELEASE}-utils/" >> "${DEST}"/debug/install.log 2>&1
 	
+	local gnupghome=/tmp/aptly-gnupg
+	rm -rf "${gnupghome}"
+	mkdir -p -m 700 "${gnupghome}"
+	GNUPGHOME="${gnupghome}" gpg --batch --import "$EXTER/packages/extras-buildpkgs/buildpkg-public.gpg" >> "${DEST}"/debug/install.log 2>&1
+	(
+		GNUPGHOME="${gnupghome}" gpg --batch --pinentry-mode loopback --passphrase "testkey1234" --import "$EXTER/packages/extras-buildpkgs/buildpkg.gpg" 2>/dev/null || 		GNUPGHOME="${gnupghome}" gpg --batch --passphrase "testkey1234" --import "$EXTER/packages/extras-buildpkgs/buildpkg.gpg"
+	) >> "${DEST}"/debug/install.log 2>&1
+
 	# -gpg-key="925644A6"
-	aptly -keyring="$EXTER/packages/extras-buildpkgs/buildpkg-public.gpg" -secret-keyring="$EXTER/packages/extras-buildpkgs/buildpkg.gpg" -batch=true -config=$conf \
+	GNUPGHOME="${gnupghome}" aptly -batch=true -config=$conf \
 	 -gpg-key="925644A6" -passphrase="testkey1234" -component=temp -distribution=$RELEASE publish repo temp >> "${DEST}"/debug/install.log 2>&1
 	aptly -config=$conf -listen=":8189" serve >> "${DEST}"/debug/install.log 2>&1 &
 
@@ -340,7 +348,9 @@ chroot_installpackages_local()
 
 	echo -e "\n\t== Finished chroot_installpackages_local process ==\n" >>$DEST/debug/install.log
 
-	kill "${aptly_pid}"
+	kill "${aptly_pid}" 2>/dev/null || true
+	wait "${aptly_pid}" 2>/dev/null || true
+	rm -rf "${gnupghome}" /tmp/aptly-temp/
 } #############################################################################
 
 # chroot_installpackages

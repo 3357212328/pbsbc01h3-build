@@ -97,9 +97,14 @@ create_desktop_package ()
 
 
 	# using different icon pack. Workaround due to this bug https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=867779
-	if [[ ${RELEASE} == bionic || ${RELEASE} == stretch || ${RELEASE} == buster || ${RELEASE} == bullseye || ${RELEASE} == focal || ${RELEASE} == eoan || ${RELEASE} == resolute ]]; then
-	sed -i 's/<property name="IconThemeName" type="string" value=".*$/<property name="IconThemeName" type="string" value="LoginIcons"\/>/g' \
-	"${destination}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+	if [[ ${RELEASE} == resolute ]]; then
+		sed -i 's/<property name="ThemeName" type="string" value=".*$/<property name="ThemeName" type="string" value="Numix"\/>/g' \
+			"${destination}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+		sed -i 's/<property name="IconThemeName" type="string" value=".*$/<property name="IconThemeName" type="string" value="Tango"\/>/g' \
+			"${destination}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+	elif [[ ${RELEASE} == bionic || ${RELEASE} == stretch || ${RELEASE} == buster || ${RELEASE} == bullseye || ${RELEASE} == focal || ${RELEASE} == eoan ]]; then
+		sed -i 's/<property name="IconThemeName" type="string" value=".*$/<property name="IconThemeName" type="string" value="LoginIcons"\/>/g' \
+			"${destination}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 	fi
 
 	# install dedicated startup icons
@@ -142,13 +147,20 @@ desktop_postinstall ()
 		chroot "${SDCARD}" /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get -yqq --no-install-recommends install $PACKAGE_LIST_DESKTOP_FAMILY" >> "${DEST}"/debug/install.log 2>&1
 	fi
 
-	# Compile Turbo Frame buffer for sunxi
-	if [[ $LINUXFAMILY == sun8i && $BRANCH == legacy ]]; then
+	# Disable Xfwm4 GL/XRender compositing on sun8i without GPU acceleration (legacy and resolute)
+	if [[ $BOARDFAMILY == sun8i && ( $BRANCH == legacy || $RELEASE == resolute ) ]]; then
 		sed 's/name="use_compositing" type="bool" value="true"/name="use_compositing" type="bool" value="false"/' -i "${SDCARD}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
-
-		# enable memory reservations
+	fi
+	# Compile Turbo Frame buffer memory reservations for legacy sun8i kernel
+	if [[ $LINUXFAMILY == sun8i && $BRANCH == legacy ]]; then
 		echo "disp_mem_reserves=on" >> "${SDCARD}"/boot/pbsbc01h3Env.txt
 		echo "extraargs=cma=96M" >> "${SDCARD}"/boot/pbsbc01h3Env.txt
+	fi
+
+	# Ensure xfdesktop 4.20+ fallback backdrop exists for any unforeseen DRM connector name
+	if [[ $RELEASE == resolute && ! -e ${SDCARD}/usr/share/xfce4/backdrops/xubuntu-wallpaper.png && -f ${SDCARD}/usr/share/backgrounds/xfce/pbsbc01h3-3840x2160.jpg ]]; then
+		mkdir -p "${SDCARD}"/usr/share/xfce4/backdrops
+		ln -sf /usr/share/backgrounds/xfce/pbsbc01h3-3840x2160.jpg "${SDCARD}"/usr/share/xfce4/backdrops/xubuntu-wallpaper.png
 	fi
 
 	mkdir -p ${SDCARD}/etc/lightdm/lightdm.conf.d

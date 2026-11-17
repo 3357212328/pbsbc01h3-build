@@ -17,7 +17,7 @@ ExecStart=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog start
 ExecStop=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog stop
 ExecReload=/usr/lib/pbsbc01h3/pbsbc01h3-ramlog write
 RemainAfterExit=yes
-TimeoutStartSec=30sec
+TimeoutStartSec=120sec
 
 [Install]
 WantedBy=sysinit.target

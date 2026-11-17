@@ -24,7 +24,7 @@
 
 activate_zram_swap() {
 	# Do not interfere with already present config-zram package
-	dpkg -l | grep -q 'zram-config' && exit 0
+	[[ "$(dpkg-query -W -f='${Status}' zram-config 2>/dev/null)" == "install ok installed" ]] && exit 0
 
 	[[ "$ENABLED" != "true" ]] && exit 0
 

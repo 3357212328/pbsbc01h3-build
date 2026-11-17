@@ -580,7 +580,9 @@ compile_pbsbc01h3-config()
 	install -m 644 $EXTER/cache/sources/pbsbc01h3-config/debian-config-submenu $tmpdir/usr/lib/pbsbc01h3-config/submenu.sh
 	install -m 644 $EXTER/cache/sources/pbsbc01h3-config/debian-config-functions $tmpdir/usr/lib/pbsbc01h3-config/functions.sh
 	install -m 644 $EXTER/cache/sources/pbsbc01h3-config/debian-config-functions-network $tmpdir/usr/lib/pbsbc01h3-config/functions-network.sh
-	install -m 755 $EXTER/cache/sources/pbsbc01h3-config/softy $tmpdir/usr/sbin/softy
+	local softy_src="$EXTER/cache/sources/pbsbc01h3-config/softy"
+	[[ ! -f "$softy_src" ]] && softy_src="$EXTER/cache/sources/pbsbc01h3-config/debian-software"
+	install -m 755 "$softy_src" "$tmpdir/usr/sbin/softy"
 	# fallback to replace pbsbc01h3-config in BSP
 	ln -sf /usr/sbin/pbsbc01h3-config $tmpdir/usr/bin/pbsbc01h3-config
 	ln -sf /usr/sbin/softy "${tmpdir}"/usr/bin/softy

@@ -3,6 +3,7 @@ Description=pbsbc01h3 desktop loading splash
 DefaultDependencies=no
 Before=rsyslog.service syslog.target systemd-journald.service sysinit.target shutdown.target
 After=local-fs.target
+ConditionPathExists=/boot/boot-desktop.png
 
 [Service]
 Type=oneshot

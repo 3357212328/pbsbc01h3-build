@@ -164,7 +164,7 @@ create_board_package()
 
 	EOF
 
-	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]]; then
+	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]] || [[ $RELEASE == resolute && $BOARDFAMILY == sun8i ]]; then
 		cat <<-EOF >> "${destination}"/DEBIAN/postinst
 		# temporally disable acceleration on some arch in Bionic due to broken mesa packages
 		echo 'Section "Device"
@@ -321,6 +321,7 @@ create_board_package()
 	# fixing permissions (basic), reference: dh_fixperms
 	find "${destination}" -print0 2>/dev/null | xargs -0r chown --no-dereference 0:0
 	find "${destination}" ! -type l -print0 2>/dev/null | xargs -0r chmod 'go=rX,u+rw,a-s'
+	[[ -d "${destination}/etc/NetworkManager/dispatcher.d" ]] && chmod 755 "${destination}"/etc/NetworkManager/dispatcher.d/*
 
 	# create board DEB file
 	display_alert "Building package" "$CHOSEN_ROOTFS" "info"

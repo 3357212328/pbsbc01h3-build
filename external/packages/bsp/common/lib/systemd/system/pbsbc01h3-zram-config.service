@@ -14,7 +14,7 @@ Type=oneshot
 ExecStart=/usr/lib/pbsbc01h3/pbsbc01h3-zram-config start
 ExecStop=/usr/lib/pbsbc01h3/pbsbc01h3-zram-config stop
 RemainAfterExit=yes
-TimeoutStartSec=30sec
+TimeoutStartSec=120sec
 
 [Install]
 WantedBy=sysinit.target

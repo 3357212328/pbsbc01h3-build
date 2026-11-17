@@ -608,7 +608,34 @@ install_distribution_specific()
 			fi
 
 			# Chrony temporal fix https://bugs.launchpad.net/ubuntu/+source/chrony/+bug/1878005
-			[[ -f "${SDCARD}"/etc/default/chrony ]] && sed -i '/DAEMON_OPTS=/s/"-F -1"/"-F 0"/' "${SDCARD}"/etc/default/chrony
+			[[ -f "${SDCARD}"/etc/default/chrony ]] && sed -i '/DAEMON_OPTS=/s/"-F -\?[0-9]\+"/"-F 0"/' "${SDCARD}"/etc/default/chrony
+
+			# Avoid hostapd crash-looping when /etc/hostapd/hostapd.conf has not been configured yet
+			if [[ -f "${SDCARD}"/lib/systemd/system/hostapd.service || -f "${SDCARD}"/usr/lib/systemd/system/hostapd.service ]]; then
+				mkdir -p "${SDCARD}"/etc/systemd/system/hostapd.service.d
+				cat <<-EOF > "${SDCARD}"/etc/systemd/system/hostapd.service.d/10-require-conf.conf
+				[Unit]
+				ConditionPathExists=/etc/hostapd/hostapd.conf
+				EOF
+			fi
+
+			# systemd 259 compatibility overrides when running on Linux 5.4 kernel
+			if [[ $RELEASE == resolute ]]; then
+				mkdir -p "${SDCARD}"/etc/systemd/system.conf.d
+				cat <<-EOF > "${SDCARD}"/etc/systemd/system.conf.d/10-pbsbc01h3-timeout.conf
+				[Manager]
+				DefaultTimeoutStartSec=180s
+				DefaultDeviceTimeoutSec=180s
+				EOF
+				for unit in systemd-hostnamed.service systemd-localed.service systemd-timedated.service systemd-networkd.service chrony.service colord.service; do
+					mkdir -p "${SDCARD}/etc/systemd/system/${unit}.d"
+					cat <<-EOF > "${SDCARD}/etc/systemd/system/${unit}.d/10-kernel54-compat.conf"
+					[Service]
+					ProtectProc=default
+					ProcSubset=all
+					EOF
+				done
+			fi
 
 			# disable conflicting services
 			chroot "${SDCARD}" /bin/bash -c "systemctl --no-reload mask ondemand.service >/dev/null 2>&1"
