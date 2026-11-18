@@ -164,7 +164,7 @@ create_board_package()
 
 	EOF
 
-	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]] || [[ ( $RELEASE == resolute || $RELEASE == bookworm || $RELEASE == trixie ) && $BOARDFAMILY == sun8i ]]; then
+	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]] || [[ ( $RELEASE == bookworm ) && $BOARDFAMILY == sun8i ]]; then
 		cat <<-EOF >> "${destination}"/DEBIAN/postinst
 		# disable glamor 3D acceleration probe on sun8i boards without 3D GPU driver
 		mkdir -p /etc/X11/xorg.conf.d

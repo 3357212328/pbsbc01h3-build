@@ -127,7 +127,7 @@ BOOTCONFIG_VAR_NAME=BOOTCONFIG_${BRANCH^^}
 [[ -z $ATFPATCHDIR ]] && ATFPATCHDIR="atf-$LINUXFAMILY"
 [[ -z $KERNELPATCHDIR ]] && KERNELPATCHDIR="$LINUXFAMILY-$BRANCH"
 
-if [[ $RELEASE == xenial || $RELEASE == bionic || $RELEASE == focal || $RELEASE == eoan || $RELEASE == resolute ]]; then
+if [[ $RELEASE == xenial || $RELEASE == bionic || $RELEASE == focal || $RELEASE == eoan ]]; then
 		DISTRIBUTION="Ubuntu"
 	else
 		DISTRIBUTION="Debian"
@@ -262,19 +262,6 @@ case $RELEASE in
 		PACKAGE_LIST_PREDEPENDS="policykit-1-gnome notification-daemon"
 	;;
 
-	trixie)
-		DEBOOTSTRAP_COMPONENTS="main,contrib,non-free,non-free-firmware"
-		DEBOOTSTRAP_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${DEBOOTSTRAP_LIST}")
-		DEBOOTSTRAP_LIST+=" adduser rng-tools-debian fdisk"
-		PACKAGE_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g; s/(^|[[:space:]])cpufrequtils([[:space:]]|$)/ /g' <<< "${PACKAGE_LIST}")
-		PACKAGE_LIST_ADDITIONAL=$(sed -E 's/(^|[[:space:]])resolvconf([[:space:]]|$)/ /g; s/(^|[[:space:]])software-properties-common([[:space:]]|$)/ /g; s/(^|[[:space:]])libfuse2([[:space:]]|$)/\1libfuse2t64\2/g; s/(^|[[:space:]])dnsutils([[:space:]]|$)/\1bind9-dnsutils\2/g' <<< "${PACKAGE_LIST_ADDITIONAL}")
-		[[ -z $BUILD_MINIMAL || $BUILD_MINIMAL == no ]] && PACKAGE_LIST_RELEASE="man-db kbd net-tools gnupg2 dirmngr networkd-dispatcher command-not-found"
-		PACKAGE_LIST_DESKTOP=$(sed -E 's/(^|[[:space:]])pavumeter([[:space:]]|$)/ /g; s/(^|[[:space:]])apt-xapian-index([[:space:]]|$)/ /g; s/(^|[[:space:]])policykit-1([[:space:]]|$)/\1polkitd pkexec\2/g; s/(^|[[:space:]])gnome-orca([[:space:]]|$)/\1orca\2/g' <<< "${PACKAGE_LIST_DESKTOP}")
-		PACKAGE_LIST_DESKTOP+=" xserver-xorg-input-all paprefs dbus-x11 numix-icon-theme tango-icon-theme onboard lxpolkit"
-		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" firefox-esr system-config-printer-common system-config-printer mirage"
-		PACKAGE_LIST_PREDEPENDS="notification-daemon"
-	;;
-
 
 	focal)
 		DEBOOTSTRAP_COMPONENTS="main,universe"
@@ -284,20 +271,6 @@ case $RELEASE in
 		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" firefox system-config-printer-common system-config-printer \
 								language-selector-gnome viewnior"
 		PACKAGE_LIST_DESKTOP_FULL+=" thunderbird"
-		PACKAGE_LIST_PREDEPENDS="policykit-1-gnome notification-daemon"
-	;;
-
-	resolute)
-		DEBOOTSTRAP_COMPONENTS="main,universe,multiverse"
-		DEBOOTSTRAP_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${DEBOOTSTRAP_LIST}")
-		DEBOOTSTRAP_LIST+=" rng-tools-debian fdisk"
-		PACKAGE_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${PACKAGE_LIST}")
-		PACKAGE_LIST_ADDITIONAL=$(sed -E 's/(^|[[:space:]])wireless-tools([[:space:]]|$)/ /g; s/(^|[[:space:]])resolvconf([[:space:]]|$)/ /g; s/(^|[[:space:]])libfuse2([[:space:]]|$)/\1libfuse2t64\2/g; s/(^|[[:space:]])dnsutils([[:space:]]|$)/\1bind9-dnsutils\2/g' <<< "${PACKAGE_LIST_ADDITIONAL}")
-		[[ -z $BUILD_MINIMAL || $BUILD_MINIMAL == no ]] && PACKAGE_LIST_RELEASE="man-db kbd net-tools gnupg2 dirmngr networkd-dispatcher"
-		PACKAGE_LIST_DESKTOP=$(sed -E 's/(^|[[:space:]])pavumeter([[:space:]]|$)/ /g; s/(^|[[:space:]])policykit-1([[:space:]]|$)/\1polkitd pkexec\2/g; s/(^|[[:space:]])gnome-orca([[:space:]]|$)/\1orca\2/g' <<< "${PACKAGE_LIST_DESKTOP}")
-		PACKAGE_LIST_DESKTOP+=" xserver-xorg-input-all paprefs dbus-x11 pulseaudio-module-gsettings onboard"
-		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" epiphany-browser system-config-printer-common system-config-printer \
-								language-selector-gnome viewnior"
 		PACKAGE_LIST_PREDEPENDS="policykit-1-gnome notification-daemon"
 	;;
 

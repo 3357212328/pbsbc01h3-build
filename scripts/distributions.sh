@@ -577,19 +577,14 @@ install_distribution_specific()
 			sed '/security/ d' -i "${SDCARD}"/etc/apt/sources.list
 
 		;;
-	bookworm|trixie)
+	bookworm)
 
 			[[ -f "${SDCARD}"/etc/initramfs-tools/initramfs.conf ]] && sed -i "s/^COMPRESS=.*/COMPRESS=gzip/" "${SDCARD}"/etc/initramfs-tools/initramfs.conf
 			[[ -f "${SDCARD}"/etc/update-motd.d/10-uname ]] && rm "${SDCARD}"/etc/update-motd.d/10-uname
 			install_rclocal
 
-			if [[ $RELEASE == bookworm ]]; then
 				[[ $(grep -L "VERSION_ID=" "${SDCARD}"/etc/os-release) ]] && echo 'VERSION_ID="12"' >> "${SDCARD}"/etc/os-release
 				[[ $(grep -L "VERSION=" "${SDCARD}"/etc/os-release) ]] && echo 'VERSION="12 (bookworm)"' >> "${SDCARD}"/etc/os-release
-			elif [[ $RELEASE == trixie ]]; then
-				[[ $(grep -L "VERSION_ID=" "${SDCARD}"/etc/os-release) ]] && echo 'VERSION_ID="13"' >> "${SDCARD}"/etc/os-release
-				[[ $(grep -L "VERSION=" "${SDCARD}"/etc/os-release) ]] && echo 'VERSION="13 (trixie)"' >> "${SDCARD}"/etc/os-release
-			fi
 
 			if [[ -f "${SDCARD}"/etc/systemd/journald.conf ]]; then
 				sed -i "s/#Storage=.*/Storage=volatile/g" "${SDCARD}"/etc/systemd/journald.conf
@@ -625,7 +620,7 @@ install_distribution_specific()
 
 		;;
 
-	bionic|eoan|focal|resolute)
+	bionic|eoan|focal)
 
 			# by using default lz4 initrd compression leads to corruption, go back to proven method
 			[[ -f "${SDCARD}"/etc/initramfs-tools/initramfs.conf ]] && sed -i "s/^COMPRESS=.*/COMPRESS=gzip/" "${SDCARD}"/etc/initramfs-tools/initramfs.conf
@@ -670,24 +665,6 @@ install_distribution_specific()
 				[Unit]
 				ConditionPathExists=/etc/hostapd/hostapd.conf
 				EOF
-			fi
-
-			# systemd 259 compatibility overrides when running on Linux 5.4 kernel
-			if [[ $RELEASE == resolute ]]; then
-				mkdir -p "${SDCARD}"/etc/systemd/system.conf.d
-				cat <<-EOF > "${SDCARD}"/etc/systemd/system.conf.d/10-pbsbc01h3-timeout.conf
-				[Manager]
-				DefaultTimeoutStartSec=180s
-				DefaultDeviceTimeoutSec=180s
-				EOF
-				for unit in systemd-hostnamed.service systemd-localed.service systemd-timedated.service systemd-networkd.service chrony.service colord.service; do
-					mkdir -p "${SDCARD}/etc/systemd/system/${unit}.d"
-					cat <<-EOF > "${SDCARD}/etc/systemd/system/${unit}.d/10-kernel54-compat.conf"
-					[Service]
-					ProtectProc=default
-					ProcSubset=all
-					EOF
-				done
 			fi
 
 			# disable conflicting services
