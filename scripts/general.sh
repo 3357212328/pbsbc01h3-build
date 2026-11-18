@@ -127,7 +127,7 @@ get_package_list_hash()
 
 # create_sources_list <release> <basedir>
 #
-# <release>: stretch|buster|bullseye|xenial|bionic|eoan|focal|resolute
+# <release>: stretch|buster|bullseye|xenial|bionic|eoan|focal
 # <basedir>: path to root directory
 #
 create_sources_list()
@@ -153,23 +153,7 @@ create_sources_list()
 	EOF
 	;;
 
-	bookworm|trixie)
-	cat <<-EOF > "${basedir}"/etc/apt/sources.list
-	deb http://${DEBIAN_MIRROR} $release main contrib non-free non-free-firmware
-	#deb-src http://${DEBIAN_MIRROR} $release main contrib non-free non-free-firmware
-
-	deb http://${DEBIAN_MIRROR} ${release}-updates main contrib non-free non-free-firmware
-	#deb-src http://${DEBIAN_MIRROR} ${release}-updates main contrib non-free non-free-firmware
-
-	deb http://${DEBIAN_MIRROR} ${release}-backports main contrib non-free non-free-firmware
-	#deb-src http://${DEBIAN_MIRROR} ${release}-backports main contrib non-free non-free-firmware
-
-	deb http://${DEBIAN_SECURTY} ${release}-security main contrib non-free non-free-firmware
-	#deb-src http://${DEBIAN_SECURTY} ${release}-security main contrib non-free non-free-firmware
-	EOF
-	;;
-
-	xenial|bionic|eoan|focal|resolute)
+	xenial|bionic|eoan|focal)
 	cat <<-EOF > "${basedir}"/etc/apt/sources.list
 	deb http://${UBUNTU_MIRROR} $release main restricted universe multiverse
 	#deb-src http://${UBUNTU_MIRROR} $release main restricted universe multiverse

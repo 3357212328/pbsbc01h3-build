@@ -97,7 +97,7 @@ create_desktop_package ()
 
 
 	# using different icon pack. Workaround due to this bug https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=867779
-	if [[ ${RELEASE} == resolute || ${RELEASE} == bookworm || ${RELEASE} == trixie ]]; then
+	if false; then
 		sed -i 's/<property name="ThemeName" type="string" value=".*$/<property name="ThemeName" type="string" value="Numix"\/>/g' \
 			"${destination}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 		sed -i 's/<property name="IconThemeName" type="string" value=".*$/<property name="IconThemeName" type="string" value="Tango"\/>/g' \
@@ -148,7 +148,7 @@ desktop_postinstall ()
 	fi
 
 	# Disable Xfwm4 GL/XRender compositing on sun8i without GPU acceleration (legacy and resolute)
-	if [[ $BOARDFAMILY == sun8i && ( $BRANCH == legacy || $RELEASE == resolute || $RELEASE == bookworm || $RELEASE == trixie ) ]]; then
+	if [[ $BOARDFAMILY == sun8i && $BRANCH == legacy ]]; then
 		sed 's/name="use_compositing" type="bool" value="true"/name="use_compositing" type="bool" value="false"/' -i "${SDCARD}"/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
 	fi
 	# Compile Turbo Frame buffer memory reservations for legacy sun8i kernel
@@ -158,7 +158,7 @@ desktop_postinstall ()
 	fi
 
 	# Ensure xfdesktop 4.20+ fallback backdrop exists for any unforeseen DRM connector name
-	if [[ ( $RELEASE == resolute || $RELEASE == bookworm || $RELEASE == trixie || $RELEASE == bullseye ) && ! -e ${SDCARD}/usr/share/xfce4/backdrops/xubuntu-wallpaper.png && -f ${SDCARD}/usr/share/backgrounds/xfce/pbsbc01h3-3840x2160.jpg ]]; then
+	if [[ $RELEASE == bullseye && ! -e ${SDCARD}/usr/share/xfce4/backdrops/xubuntu-wallpaper.png && -f ${SDCARD}/usr/share/backgrounds/xfce/pbsbc01h3-3840x2160.jpg ]]; then
 		mkdir -p "${SDCARD}"/usr/share/xfce4/backdrops
 		ln -sf /usr/share/backgrounds/xfce/pbsbc01h3-3840x2160.jpg "${SDCARD}"/usr/share/xfce4/backdrops/xubuntu-wallpaper.png
 	fi
