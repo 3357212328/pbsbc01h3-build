@@ -189,7 +189,7 @@ create_rootfs_cache()
 		[[ $ARCH == arm64 ]] && eval 'LC_ALL=C LANG=C chroot $SDCARD /bin/bash -c "dpkg --add-architecture armhf"'
 
 		# this should fix resolvconf installation failure in some cases
-		[[ $RELEASE != resolute ]] && chroot $SDCARD /bin/bash -c 'echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections'
+		[[ $RELEASE != resolute && $RELEASE != bookworm && $RELEASE != trixie ]] && chroot $SDCARD /bin/bash -c 'echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections'
 
 		# stage: update packages list
 		display_alert "Updating package list" "$RELEASE" "info"

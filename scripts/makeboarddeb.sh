@@ -164,12 +164,15 @@ create_board_package()
 
 	EOF
 
-	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]] || [[ $RELEASE == resolute && $BOARDFAMILY == sun8i ]]; then
+	if [[ $RELEASE == bionic && $BOARD != pbsbc01h34 ]] || [[ $RELEASE == focal && $BOARDFAMILY == sun50iw6 ]] || [[ ( $RELEASE == resolute || $RELEASE == bookworm || $RELEASE == trixie ) && $BOARDFAMILY == sun8i ]]; then
 		cat <<-EOF >> "${destination}"/DEBIAN/postinst
-		# temporally disable acceleration on some arch in Bionic due to broken mesa packages
-		echo 'Section "Device"
-		\tIdentifier \t"Default Device"
-		\tOption \t"AccelMethod" "none"
+		# disable glamor 3D acceleration probe on sun8i boards without 3D GPU driver
+		mkdir -p /etc/X11/xorg.conf.d
+		echo 'Section "OutputClass"
+		\tIdentifier \t"sunxi-drm-no-glamor"
+		\tMatchDriver \t"sun4i-drm|vkms"
+		\tDriver \t\t"modesetting"
+		\tOption \t\t"AccelMethod" "none"
 		EndSection' >> /etc/X11/xorg.conf.d/01-pbsbc01h3-defaults.conf
 		EOF
 	elif [[ $RELEASE == bionic && $BOARD == pbsbc01h34 ]]; then

@@ -169,7 +169,7 @@ if [[ "$BUILD_MINIMAL" != "yes"  ]]; then
 		ntfs-3g vim pciutils evtest pv libfuse2 libdigest-sha-perl \
 		libproc-processtable-perl aptitude dnsutils f3 haveged hdparm rfkill vlan bash-completion \
 		hostapd git ethtool unzip ifenslave libpam-systemd iperf3 \
-		software-properties-common libnss-myhostname f2fs-tools avahi-autoipd iputils-arping qrencode sunxi-tools"
+		software-properties-common libnss-myhostname f2fs-tools avahi-autoipd iputils-arping qrencode sunxi-tools i2c-tools ir-keytable v4l-utils fswebcam libcrypt-dev"
 fi
 
 
@@ -247,6 +247,32 @@ case $RELEASE in
 		PACKAGE_LIST_DESKTOP+=" paprefs dbus-x11 numix-icon-theme"
 		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" firefox-esr system-config-printer-common system-config-printer"
 		PACKAGE_LIST_DESKTOP_FULL+=""
+	;;
+
+	bookworm)
+		DEBOOTSTRAP_COMPONENTS="main,contrib,non-free,non-free-firmware"
+		DEBOOTSTRAP_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${DEBOOTSTRAP_LIST}")
+		DEBOOTSTRAP_LIST+=" adduser rng-tools-debian fdisk"
+		PACKAGE_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${PACKAGE_LIST}")
+		PACKAGE_LIST_ADDITIONAL=$(sed -E 's/(^|[[:space:]])resolvconf([[:space:]]|$)/ /g' <<< "${PACKAGE_LIST_ADDITIONAL}")
+		[[ -z $BUILD_MINIMAL || $BUILD_MINIMAL == no ]] && PACKAGE_LIST_RELEASE="man-db kbd net-tools gnupg2 dirmngr networkd-dispatcher command-not-found"
+		PACKAGE_LIST_DESKTOP=$(sed -E 's/(^|[[:space:]])gnome-orca([[:space:]]|$)/\1orca\2/g' <<< "${PACKAGE_LIST_DESKTOP}")
+		PACKAGE_LIST_DESKTOP+=" xserver-xorg-input-all paprefs dbus-x11 numix-icon-theme tango-icon-theme onboard"
+		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" firefox-esr system-config-printer-common system-config-printer mirage"
+		PACKAGE_LIST_PREDEPENDS="policykit-1-gnome notification-daemon"
+	;;
+
+	trixie)
+		DEBOOTSTRAP_COMPONENTS="main,contrib,non-free,non-free-firmware"
+		DEBOOTSTRAP_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g' <<< "${DEBOOTSTRAP_LIST}")
+		DEBOOTSTRAP_LIST+=" adduser rng-tools-debian fdisk"
+		PACKAGE_LIST=$(sed -E 's/(^|[[:space:]])crda([[:space:]]|$)/ /g; s/(^|[[:space:]])cpufrequtils([[:space:]]|$)/ /g' <<< "${PACKAGE_LIST}")
+		PACKAGE_LIST_ADDITIONAL=$(sed -E 's/(^|[[:space:]])resolvconf([[:space:]]|$)/ /g; s/(^|[[:space:]])software-properties-common([[:space:]]|$)/ /g; s/(^|[[:space:]])libfuse2([[:space:]]|$)/\1libfuse2t64\2/g; s/(^|[[:space:]])dnsutils([[:space:]]|$)/\1bind9-dnsutils\2/g' <<< "${PACKAGE_LIST_ADDITIONAL}")
+		[[ -z $BUILD_MINIMAL || $BUILD_MINIMAL == no ]] && PACKAGE_LIST_RELEASE="man-db kbd net-tools gnupg2 dirmngr networkd-dispatcher command-not-found"
+		PACKAGE_LIST_DESKTOP=$(sed -E 's/(^|[[:space:]])pavumeter([[:space:]]|$)/ /g; s/(^|[[:space:]])apt-xapian-index([[:space:]]|$)/ /g; s/(^|[[:space:]])policykit-1([[:space:]]|$)/\1polkitd pkexec\2/g; s/(^|[[:space:]])gnome-orca([[:space:]]|$)/\1orca\2/g' <<< "${PACKAGE_LIST_DESKTOP}")
+		PACKAGE_LIST_DESKTOP+=" xserver-xorg-input-all paprefs dbus-x11 numix-icon-theme tango-icon-theme onboard lxpolkit"
+		PACKAGE_LIST_DESKTOP_RECOMMENDS+=" firefox-esr system-config-printer-common system-config-printer mirage"
+		PACKAGE_LIST_PREDEPENDS="notification-daemon"
 	;;
 
 

@@ -27,6 +27,8 @@ create_chroot()
 	apt_mirror['stretch']="$DEBIAN_MIRROR"
 	apt_mirror['buster']="$DEBIAN_MIRROR"
 	apt_mirror['bullseye']="$DEBIAN_MIRROR"
+	apt_mirror['bookworm']="$DEBIAN_MIRROR"
+	apt_mirror['trixie']="$DEBIAN_MIRROR"
 	apt_mirror['xenial']="$UBUNTU_MIRROR"
 	apt_mirror['bionic']="$UBUNTU_MIRROR"
 	apt_mirror['focal']="$UBUNTU_MIRROR"
@@ -35,6 +37,8 @@ create_chroot()
 	components['stretch']='main,contrib'
 	components['buster']='main,contrib'
 	components['bullseye']='main,contrib'
+	components['bookworm']='main,contrib,non-free,non-free-firmware'
+	components['trixie']='main,contrib,non-free,non-free-firmware'
 	components['xenial']='main,universe,multiverse'
 	components['bionic']='main,universe,multiverse'
 	components['focal']='main,universe,multiverse'
@@ -97,6 +101,8 @@ chroot_prepare_distccd()
 	gcc_version['stretch']='6.3'
 	gcc_version['buster']='8.3'
 	gcc_version['bullseye']='9.2'
+	gcc_version['bookworm']='12.2'
+	gcc_version['trixie']='14.2'
 	gcc_version['xenial']='5.4'
 	gcc_version['bionic']='5.4'
 	gcc_version['focal']='9.2'
@@ -136,7 +142,7 @@ chroot_build_packages()
 		target_arch="${ARCH}"
 	else
 		# only make packages for recent releases. There are no changes on older
-		target_release="stretch bionic buster bullseye eoan focal resolute"
+		target_release="stretch bionic buster bullseye bookworm trixie eoan focal resolute"
 		target_arch="armhf arm64"
 	fi
 

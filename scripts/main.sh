@@ -229,6 +229,8 @@ declare -A distro_name
 distro_name['stretch']="Debian 9 Stretch"
 distro_name['buster']="Debian 10 Buster"
 distro_name['bullseye']="Debian 11 Bullseye"
+distro_name['bookworm']="Debian 12 Bookworm"
+distro_name['trixie']="Debian 13 Trixie"
 distro_name['xenial']="Ubuntu Xenial 16.04 LTS"
 distro_name['bionic']="Ubuntu Bionic 18.04 LTS"
 distro_name['focal']="Ubuntu Focal 20.04 LTS"
@@ -237,7 +239,7 @@ distro_name['resolute']="Ubuntu Resolute 26.04 LTS"
 
 if [[ ${BUILD_OPT} == image || ${BUILD_OPT} == rootfs ]]; then
 
-	RELEASE_TARGET="stretch buster bullseye xenial bionic eoan focal resolute"
+	RELEASE_TARGET="trixie bookworm bullseye buster stretch xenial bionic eoan focal resolute"
 
 	if [[ -z $RELEASE ]]; then
 
@@ -255,16 +257,18 @@ if [[ ${BUILD_OPT} == image || ${BUILD_OPT} == rootfs ]]; then
 
 		elif [[ $BRANCH == current ]]; then
 
-	        	RELEASE_TARGET="buster bionic focal resolute"
-			[[ $LINUXFAMILY == sun50iw6 ]] && RELEASE_TARGET="buster focal resolute"
+	        	RELEASE_TARGET="trixie bookworm bullseye buster bionic focal resolute"
+			[[ $LINUXFAMILY == sun50iw6 ]] && RELEASE_TARGET="trixie bookworm buster focal resolute"
 		else
 
 			[[ -z $BRANCH ]] && exit_with_error "No kernel branch selected"
 		fi
 
-                distro_menu "stretch"
-                distro_menu "buster"
+                distro_menu "trixie"
+                distro_menu "bookworm"
                 distro_menu "bullseye"
+                distro_menu "buster"
+                distro_menu "stretch"
                 distro_menu "xenial"
                 distro_menu "bionic"
                 distro_menu "eoan"

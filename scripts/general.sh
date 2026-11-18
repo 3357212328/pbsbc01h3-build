@@ -153,6 +153,22 @@ create_sources_list()
 	EOF
 	;;
 
+	bookworm|trixie)
+	cat <<-EOF > "${basedir}"/etc/apt/sources.list
+	deb http://${DEBIAN_MIRROR} $release main contrib non-free non-free-firmware
+	#deb-src http://${DEBIAN_MIRROR} $release main contrib non-free non-free-firmware
+
+	deb http://${DEBIAN_MIRROR} ${release}-updates main contrib non-free non-free-firmware
+	#deb-src http://${DEBIAN_MIRROR} ${release}-updates main contrib non-free non-free-firmware
+
+	deb http://${DEBIAN_MIRROR} ${release}-backports main contrib non-free non-free-firmware
+	#deb-src http://${DEBIAN_MIRROR} ${release}-backports main contrib non-free non-free-firmware
+
+	deb http://${DEBIAN_SECURTY} ${release}-security main contrib non-free non-free-firmware
+	#deb-src http://${DEBIAN_SECURTY} ${release}-security main contrib non-free non-free-firmware
+	EOF
+	;;
+
 	xenial|bionic|eoan|focal|resolute)
 	cat <<-EOF > "${basedir}"/etc/apt/sources.list
 	deb http://${UBUNTU_MIRROR} $release main restricted universe multiverse
